@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // <-- Import Link
 import { LoginModel } from '../../Models/LoginModel';
 import { LoginErrorModel } from '../../Models/LoginErrorModel';
 import { loginApiCall } from '../../services/AuthService';
@@ -77,9 +77,17 @@ const LoginPage = () => {
           {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text-secondary">
-            Password
-          </label>
+          <div className="flex items-center justify-between">
+            <label htmlFor="password" className="block text-sm font-medium text-text-secondary">
+              Password
+            </label>
+            {/* --- NEW LINK ADDED HERE --- */}
+            <div className="text-sm">
+              <Link to="/forgot-password" className="font-medium text-primary hover:text-primary-hover">
+                Forgot password?
+              </Link>
+            </div>
+          </div>
           <input
             id="password"
             name="password"

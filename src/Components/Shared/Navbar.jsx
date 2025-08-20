@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { user$, userLogout } from '../../rxjs/UserService';
 import ThemeToggle from './ThemeToggle';
+import logo from '../../assets/images/logo.png'; // <-- Import your logo
 
 const Navbar = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -30,8 +31,10 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 bg-card shadow-md md:bg-card/80 md:backdrop-blur-md dark:shadow-lg dark:shadow-slate-900/50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold text-primary" onClick={closeMenu}>
-          RoadReady
+        {/* --- CHANGE IS HERE --- */}
+        <Link to="/" className="flex items-center gap-2" onClick={closeMenu}>
+          <img src={logo} alt="RoadReady Logo" className="h-8 w-auto" />
+          <span className="text-2xl font-bold text-primary">RoadReady</span>
         </Link>
 
         <div className="hidden md:flex items-center space-x-6">

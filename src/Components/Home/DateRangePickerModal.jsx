@@ -1,35 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
-import { format, addDays } from 'date-fns';
+import { format, addDays, startOfToday } from 'date-fns';
 
-// Custom styles for react-day-picker to match our theme
-const css = `
-  .rdp {
-    --rdp-cell-size: 40px;
-    --rdp-accent-color: var(--color-primary);
-    --rdp-background-color: var(--color-primary-hover);
-    --rdp-accent-color-dark: var(--color-primary);
-    --rdp-background-color-dark: var(--color-primary-hover);
-    --rdp-outline: 2px solid var(--color-primary);
-    --rdp-outline-selected: 3px solid var(--color-primary);
-    margin: 1em 0;
-  }
-  .rdp-caption_label { font-weight: 600; color: var(--color-text-primary); }
-  .rdp-nav_button { color: var(--color-text-secondary); }
-  .rdp-head_cell { color: var(--color-text-secondary); }
-  .rdp-day { color: var(--color-text-primary); }
-  .rdp-day_selected { background-color: var(--color-primary) !important; color: white !important; }
-  .rdp-day_range_start, .rdp-day_range_end { background-color: var(--color-primary) !important; color: white !important; }
-  .rdp-day_range_middle { background-color: var(--color-primary-hover) !important; color: white !important; opacity: 0.8; }
-  .rdp-day_disabled { color: var(--color-border); }
-`;
+// Custom Hook to detect screen size for responsive calendar
+const useMediaQuery = (query) => {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    window.addEventListener('resize', listener);
+    return () => window.removeEventListener('resize', listener);
+  }, [matches, query]);
+  return matches;
+};
 
 const DateRangePickerModal = ({ isOpen, onClose, onContinue }) => {
   const [range, setRange] = useState({ from: undefined, to: undefined });
   const [startTime, setStartTime] = useState(12);
   const [endTime, setEndTime] = useState(12);
+  const today = startOfToday();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   const isContinueDisabled = !range || !range.from || !range.to;
 
@@ -62,41 +57,46 @@ const DateRangePickerModal = ({ isOpen, onClose, onContinue }) => {
     setRange(selectedRange);
   };
 
-  const modifiers = {};
+  const disabledDays = [{ before: today }];
   if (range?.from) {
     const maxEndDate = addDays(range.from, 30);
-    modifiers.disabled = [{ after: maxEndDate }];
+    disabledDays.push({ after: maxEndDate });
   }
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        {/* --- CHANGES ARE ON THIS LINE --- */}
         <Dialog.Panel className="w-full max-w-fit rounded-lg bg-card p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-          <style>{css}</style>
           <div className="flex justify-between items-center mb-4">
             <div className="text-text-secondary text-sm md:text-base">
-              <span className={range?.from ? 'text-text-primary font-semibold' : ''}>
-                {range?.from ? format(range.from, "d MMM ''yy") : 'Select Start Date'}
-              </span>
+              <span className={range?.from ? 'text-text-primary font-semibold' : ''}>{range?.from ? format(range.from, "d MMM ''yy") : 'Select Start Date'}</span>
               <span> - </span>
-              <span className={range?.to ? 'text-text-primary font-semibold' : ''}>
-                {range?.to ? format(range.to, "d MMM ''yy") : 'Select End Date'}
-              </span>
+              <span className={range?.to ? 'text-text-primary font-semibold' : ''}>{range?.to ? format(range.to, "d MMM ''yy") : 'Select End Date'}</span>
             </div>
             <button onClick={handleReset} className="text-sm text-text-secondary hover:text-primary">RESET</button>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-center">
+          <div className="flex justify-center">
             <DayPicker
               mode="range"
               selected={range}
               onSelect={handleDaySelect}
-              numberOfMonths={2}
+              numberOfMonths={isDesktop ? 2 : 1}
               pagedNavigation
-              disabled={{ before: new Date() }}
-              modifiers={modifiers}
+              disabled={disabledDays}
+              classNames={{
+                caption_label: 'text-lg font-bold text-text-primary',
+                nav_button: 'h-8 w-8 flex items-center justify-center rounded-full hover:bg-border',
+                head_cell: 'text-sm text-text-secondary',
+                day: 'w-10 h-10 rounded-full hover:bg-border',
+                day_selected: 'bg-primary text-white hover:bg-primary-hover',
+                day_range_start: 'rounded-r-none bg-primary text-white',
+                day_range_end: 'rounded-l-none bg-primary text-white',
+                day_range_middle: 'rounded-none bg-primary/20 dark:bg-primary/30 text-text-primary',
+                day_disabled: 'text-border cursor-not-allowed',
+                day_today: 'font-bold text-primary',
+              }}
             />
           </div>
 

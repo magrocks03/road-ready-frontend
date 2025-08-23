@@ -36,6 +36,7 @@ const Navbar = () => {
           {currentUser && (
             <>
               <Link to="/my-bookings" className="text-slate-gray hover:text-primary">My Bookings</Link>
+              <Link to="/my-issues" className="text-slate-gray hover:text-primary">My Issues</Link>
               <Link to="/my-profile" className="text-slate-gray hover:text-primary">My Profile</Link>
             </>
           )}
@@ -47,16 +48,12 @@ const Navbar = () => {
           {currentUser ? (
             <>
               <span className="text-text-primary">Welcome, {currentUser}!</span>
-              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
-                Logout
-              </button>
+              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Logout</button>
             </>
           ) : (
             <>
               <Link to="/login" className="text-slate-gray hover:text-primary">Login</Link>
-              <Link to="/register" className="bg-primary text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary-hover">
-                Register
-              </Link>
+              <Link to="/register" className="bg-primary text-white px-4 py-2 rounded-md transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary-hover">Register</Link>
             </>
           )}
         </div>
@@ -76,6 +73,7 @@ const Navbar = () => {
             {currentUser && (
               <>
                <Link to="/my-bookings" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">My Bookings</Link>
+               <Link to="/my-issues" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">My Issues</Link>
                <Link to="/my-profile" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">My Profile</Link>
               </>
             )}
@@ -84,9 +82,7 @@ const Navbar = () => {
             {currentUser ? (
                <div className="px-3 py-2">
                  <span className="block text-text-primary">Welcome, {currentUser}!</span>
-                 <button onClick={handleLogout} className="w-full mt-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-left">
-                    Logout
-                  </button>
+                 <button onClick={handleLogout} className="w-full mt-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-left">Logout</button>
                </div>
             ) : (
               <>

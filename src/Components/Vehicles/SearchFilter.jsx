@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { getAllBrandsApiCall, getAllLocationsApiCall } from '../../services/HelperService';
 import AllFiltersModal from './AllFiltersModal';
 
-const SearchFilter = ({ onSearch, initialCriteria = {} }) => {
+const SearchFilter = ({ onSearch, initialCriteria }) => {
   const [brands, setBrands] = useState([]);
   const [locations, setLocations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
+  // Initialize state from the initialCriteria prop
   const [criteria, setCriteria] = useState({
     name: initialCriteria.name || '',
     locationId: initialCriteria.locationId || '',

@@ -1,44 +1,56 @@
-import { useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import { searchVehiclesApiCall } from '../../services/VehicleService';
 import VehicleCard from '../../Components/Vehicles/VehicleCard';
 import SearchFilter from '../../Components/Vehicles/SearchFilter';
-import { useFetch } from '../../hooks/useFetch'; // <-- Import our new hook
+import { getCurrentSearchState, updateSearchState } from '../../rxjs/SearchService';
 
 const VehiclesPage = () => {
-  const location = useLocation();
-  const initialCriteria = location.state?.initialCriteria || {};
+  const initialSearchState = getCurrentSearchState();
 
+  const [vehicles, setVehicles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({ pageNumber: 1, pageSize: 8, totalPages: 1 });
-  const [currentCriteria, setCurrentCriteria] = useState(initialCriteria);
+  const [currentCriteria, setCurrentCriteria] = useState(initialSearchState.criteria);
 
-  // --- THIS IS THE NEW DATA FETCHING LOGIC ---
-  const payload = useMemo(() => ({
-    pageNumber: pagination.pageNumber,
-    pageSize: pagination.pageSize,
-    name: currentCriteria.name || undefined,
-    model: currentCriteria.model || undefined,
-    brandId: currentCriteria.brandId ? parseInt(currentCriteria.brandId) : undefined,
-    locationId: currentCriteria.locationId ? parseInt(currentCriteria.locationId) : undefined,
-    minPrice: currentCriteria.minPrice ? parseFloat(currentCriteria.minPrice) : undefined,
-    maxPrice: currentCriteria.maxPrice ? parseFloat(currentCriteria.maxPrice) : undefined,
-    fuelType: currentCriteria.fuelType || undefined,
-    transmission: currentCriteria.transmission || undefined,
-    seatingCapacity: currentCriteria.seatingCapacity ? parseInt(currentCriteria.seatingCapacity) : undefined,
-  }), [currentCriteria, pagination]);
+  const fetchVehicles = useCallback((criteria, page) => {
+    setIsLoading(true);
+    setError(null);
+    const payload = {
+      pageNumber: page,
+      pageSize: pagination.pageSize,
+      name: criteria.name || undefined,
+      model: criteria.model || undefined,
+      brandId: criteria.brandId ? parseInt(criteria.brandId) : undefined,
+      locationId: criteria.locationId ? parseInt(criteria.locationId) : undefined,
+      minPrice: criteria.minPrice ? parseFloat(criteria.minPrice) : undefined,
+      maxPrice: criteria.maxPrice ? parseFloat(criteria.maxPrice) : undefined,
+      fuelType: criteria.fuelType || undefined,
+      transmission: criteria.transmission || undefined,
+      seatingCapacity: criteria.seatingCapacity ? parseInt(criteria.seatingCapacity) : undefined,
+    };
+    searchVehiclesApiCall(payload).then(response => {
+      setVehicles(response.data.items);
+      setPagination(prev => ({ ...prev, pageNumber: response.data.pageNumber, totalPages: response.data.totalPages }));
+    }).catch(err => {
+      console.error("Failed to fetch vehicles:", err);
+      setError("Sorry, we couldn't load the vehicles at this time.");
+    }).finally(() => setIsLoading(false));
+  }, [pagination.pageSize]);
 
-  const { data: response, isLoading, error } = useFetch(() => searchVehiclesApiCall(payload), [payload]);
-  const vehicles = response?.items || [];
-  const totalPages = response?.totalPages || 1;
-  // --- END OF NEW LOGIC ---
+  useEffect(() => {
+    fetchVehicles(currentCriteria, pagination.pageNumber);
+  }, [fetchVehicles, currentCriteria, pagination.pageNumber]);
 
   const handleSearch = (criteria) => {
     setCurrentCriteria(criteria);
+    // Also update the global state so it's remembered everywhere
+    updateSearchState({ criteria, dateRange: initialSearchState.dateRange });
     setPagination(prev => ({ ...prev, pageNumber: 1 }));
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
+    if (newPage > 0 && newPage <= pagination.totalPages) {
       setPagination(prev => ({ ...prev, pageNumber: newPage }));
     }
   };
@@ -47,9 +59,7 @@ const VehiclesPage = () => {
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-text-primary mb-4">Explore Our Fleet</h1>
       <p className="text-text-secondary mb-8">Find the perfect vehicle for your next journey.</p>
-      
-      <SearchFilter onSearch={handleSearch} initialCriteria={initialCriteria} />
-
+      <SearchFilter onSearch={handleSearch} initialCriteria={currentCriteria} />
       {isLoading ? (
         <div className="text-center py-20"><p>Loading vehicles...</p></div>
       ) : error ? (
@@ -63,8 +73,8 @@ const VehiclesPage = () => {
           </div>
           <div className="flex justify-center items-center mt-12 space-x-4">
             <button onClick={() => handlePageChange(pagination.pageNumber - 1)} disabled={pagination.pageNumber <= 1} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Previous</button>
-            <span>Page {pagination.pageNumber} of {totalPages}</span>
-            <button onClick={() => handlePageChange(pagination.pageNumber + 1)} disabled={pagination.pageNumber >= totalPages} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Next</button>
+            <span>Page {pagination.pageNumber} of {pagination.totalPages}</span>
+            <button onClick={() => handlePageChange(pagination.pageNumber + 1)} disabled={pagination.pageNumber >= pagination.totalPages} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Next</button>
           </div>
         </>
       ) : (

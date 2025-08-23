@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import DateRangePickerModal from '../../Components/Home/DateRangePickerModal';
 import heroBackground from '../../assets/images/hero-background.jpg';
 import { getAllLocationsApiCall } from '../../services/HelperService';
-import { updateSearchState } from '../../rxjs/SearchService'; // <-- Import new service
+import { updateSearchState } from '../../rxjs/SearchService';
 
 const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,12 +24,11 @@ const HomePage = () => {
   };
 
   const handleSearch = () => {
-    // --- UPDATE THE GLOBAL SEARCH STATE ---
+    // Update the global search state with all criteria
     updateSearchState({
       criteria: { locationId },
       dateRange: dateRange,
     });
-    // Then navigate to the vehicles page
     navigate('/vehicles');
   };
 

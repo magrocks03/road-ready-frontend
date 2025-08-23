@@ -13,7 +13,8 @@ import BookingPage from './pages/Booking/BookingPage';
 import PaymentPage from './pages/Payment/PaymentPage';
 import MyBookingsPage from './pages/MyBookings/MyBookingsPage';
 import BookingDetailsPage from './pages/BookingDetails/BookingDetailsPage';
-import MyProfilePage from './pages/MyProfile/MyProfilePage'; // <-- Import
+import MyProfilePage from './pages/MyProfile/MyProfilePage';
+import MyIssuesPage from './pages/MyIssues/MyIssuesPage'; // <-- Import
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
               <Route path="payment" element={<PaymentPage />} />
               <Route path="my-bookings" element={<MyBookingsPage />} />
               <Route path="booking-details/:id" element={<BookingDetailsPage />} />
-              <Route path="my-profile" element={<MyProfilePage />} /> {/* <-- Add new route */}
+              <Route path="my-profile" element={<MyProfilePage />} />
+              <Route path="my-issues" element={<MyIssuesPage />} /> {/* <-- Add new route */}
             </Route>
           </Route>
         </Routes>

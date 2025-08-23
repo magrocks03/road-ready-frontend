@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { initiateBookingApiCall, confirmBookingApiCall, getMyBookingsApiCall } from './BookingService';
+import { initiateBookingApiCall, confirmBookingApiCall, getMyBookingsApiCall, cancelBookingApiCall } from './BookingService';
 import { API_BASE_URL } from '../environment';
 
 jest.mock('axios');
@@ -26,11 +26,21 @@ describe('BookingService', () => {
     expect(axios.post).toHaveBeenCalledWith(expectedUrl, paymentData);
   });
 
-  // --- NEW TEST CASE ---
   it('should call the get my bookings API with the correct URL', async () => {
     const expectedUrl = `${API_BASE_URL}/Bookings/my-bookings?pageNumber=1&pageSize=10`;
     axios.get.mockResolvedValue({ data: 'success' });
     await getMyBookingsApiCall();
     expect(axios.get).toHaveBeenCalledWith(expectedUrl);
+  });
+
+  // --- NEW TEST CASE ---
+  it('should call the cancel booking API with the correct URL and method', async () => {
+    const bookingId = 456;
+    const expectedUrl = `${API_BASE_URL}/Bookings/${bookingId}/cancel`;
+    axios.put.mockResolvedValue({ data: 'success' }); // Mocking a PUT request
+
+    await cancelBookingApiCall(bookingId);
+
+    expect(axios.put).toHaveBeenCalledWith(expectedUrl);
   });
 });

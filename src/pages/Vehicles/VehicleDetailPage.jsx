@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getVehicleByIdApiCall } from '../../services/VehicleService';
+import ReviewsList from '../../Components/Reviews/ReviewsList'; // <-- Import
 
 const placeholderImage = 'https://placehold.co/800x600/e2e8f0/e2e8f0?text=';
 
@@ -9,23 +10,23 @@ const VehicleDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { dateRange } = location.state || {};
 
   useEffect(() => {
     if (id) {
-      getVehicleByIdApiCall(id)
-        .then(response => setVehicle(response.data))
-        .catch(err => {
-          console.error("Failed to fetch vehicle details:", err);
-          setError("Could not find vehicle details. Please try again.");
-        })
-        .finally(() => setIsLoading(false));
+      getVehicleByIdApiCall(id).then(response => {
+        setVehicle(response.data);
+      }).catch(err => {
+        console.error("Failed to fetch vehicle details:", err);
+        setError("Could not find vehicle details. Please try again.");
+      }).finally(() => setIsLoading(false));
     }
   }, [id]);
 
   const handleBookNow = () => {
-    // Navigate to the booking page for this vehicle
-    navigate(`/booking/${id}`);
+    navigate(`/booking/${id}`, { state: { dateRange } });
   };
 
   if (isLoading) return <div className="text-center py-20"><p>Loading details...</p></div>;
@@ -36,12 +37,7 @@ const VehicleDetailPage = () => {
     <div className="container mx-auto py-12 px-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <div>
-          <img
-            src={vehicle.imageUrl || placeholderImage}
-            alt={`${vehicle.brandName} ${vehicle.name}`}
-            className="w-full h-auto object-cover rounded-lg shadow-lg"
-            onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }}
-          />
+          <img src={vehicle.imageUrl || placeholderImage} alt={`${vehicle.brandName} ${vehicle.name}`} className="w-full h-auto object-cover rounded-lg shadow-lg" onError={(e) => { e.target.onerror = null; e.target.src = placeholderImage; }} />
         </div>
         <div className="flex flex-col">
           <p className="text-sm font-medium text-primary">{vehicle.brandName}</p>
@@ -60,14 +56,16 @@ const VehicleDetailPage = () => {
               <span className="text-text-secondary">Price per day</span>
               <span className="text-3xl font-bold text-primary">${vehicle.pricePerDay}</span>
             </div>
-            <button 
-              onClick={handleBookNow}
-              className="w-full lg:w-auto lg:px-12 py-3 font-medium text-white bg-primary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary-hover"
-            >
+            <button onClick={handleBookNow} className="w-full lg:w-auto lg:px-12 py-3 font-medium text-white bg-primary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-primary-hover">
               Book Now
             </button>
           </div>
         </div>
+      </div>
+
+      {/* --- ADD REVIEWS SECTION HERE --- */}
+      <div className="mt-12 border-t border-border pt-8">
+        <ReviewsList vehicleId={id} />
       </div>
     </div>
   );

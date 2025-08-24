@@ -20,10 +20,18 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
 
   const handleAddUser = () => {
     setError('');
+    // --- ADDED PASSWORD VALIDATION ---
     if (!newUser.firstName || !newUser.lastName || !newUser.email || !newUser.password) {
       setError('First name, last name, email, and password are required.');
       return;
     }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newUser.password)) {
+      setError('Password must be 8+ characters with uppercase, lowercase, number, and special character.');
+      return;
+    }
+    // --- END OF VALIDATION ---
 
     const payload = {
       ...newUser,
@@ -57,7 +65,6 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
             <input type="email" name="email" value={newUser.email} onChange={handleInputChange} placeholder="Email" className="w-full p-2 bg-background border border-border text-text-primary placeholder:text-text-secondary rounded-md" />
             <input type="password" name="password" value={newUser.password} onChange={handleInputChange} placeholder="Password" className="w-full p-2 bg-background border border-border text-text-primary placeholder:text-text-secondary rounded-md" />
             <input name="phoneNumber" value={newUser.phoneNumber} onChange={handleInputChange} placeholder="Phone Number (Optional)" className="w-full p-2 bg-background border border-border text-text-primary placeholder:text-text-secondary rounded-md" />
-            {/* --- CHANGE IS HERE --- */}
             <select name="roleName" value={newUser.roleName} onChange={handleInputChange} className="w-full p-2 bg-background border border-border text-text-primary rounded-md">
               <option value="Customer">Customer</option>
               <option value="Rental Agent">Rental Agent</option>

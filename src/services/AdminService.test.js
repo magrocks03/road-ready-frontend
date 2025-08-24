@@ -4,7 +4,10 @@ import {
   getAllUsersApiCall,
   createAdminUserApiCall,
   updateUserRoleApiCall,
-  deactivateUserApiCall
+  deactivateUserApiCall,
+  getAllBookingsApiCall,
+  processRefundApiCall,
+  getAllIssuesApiCall 
 } from './AdminService';
 import { API_BASE_URL } from '../environment';
 
@@ -29,7 +32,6 @@ describe('AdminService', () => {
     expect(axios.get).toHaveBeenCalledWith(expectedUrl);
   });
 
-  // --- NEW TEST CASES ---
   it('should call the create user API with the correct URL and data', async () => {
     const userData = { email: 'test@test.com' };
     const expectedUrl = `${API_BASE_URL}/Admin/users`;
@@ -53,5 +55,27 @@ describe('AdminService', () => {
     axios.put.mockResolvedValue({ data: 'success' });
     await deactivateUserApiCall(userId);
     expect(axios.put).toHaveBeenCalledWith(expectedUrl);
+  });
+
+  it('should call the get all bookings API with the correct URL', async () => {
+    const expectedUrl = `${API_BASE_URL}/Admin/bookings?pageNumber=1&pageSize=10`;
+    axios.get.mockResolvedValue({ data: 'success' });
+    await getAllBookingsApiCall();
+    expect(axios.get).toHaveBeenCalledWith(expectedUrl);
+  });
+
+  it('should call the process refund API with the correct URL and data', async () => {
+    const refundData = { bookingId: 1, reason: 'Test' };
+    const expectedUrl = `${API_BASE_URL}/Admin/refunds`;
+    axios.post.mockResolvedValue({ data: 'success' });
+    await processRefundApiCall(refundData);
+    expect(axios.post).toHaveBeenCalledWith(expectedUrl, refundData);
+  });
+
+    it('should call the get all issues API with the correct URL', async () => {
+    const expectedUrl = `${API_BASE_URL}/Admin/issues?pageNumber=1&pageSize=10`;
+    axios.get.mockResolvedValue({ data: 'success' });
+    await getAllIssuesApiCall();
+    expect(axios.get).toHaveBeenCalledWith(expectedUrl);
   });
 });

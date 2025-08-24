@@ -23,6 +23,9 @@ import MyProfilePage from './pages/MyProfile/MyProfilePage';
 import MyIssuesPage from './pages/MyIssues/MyIssuesPage';
 import AdminDashboardPage from './pages/Admin/Dashboard/AdminDashboardPage';
 import UserManagementPage from './pages/Admin/UserManagement/UserManagementPage';
+import VehicleManagementPage from './pages/Admin/VehicleManagement/VehicleManagementPage';
+import AllBookingsPage from './pages/Admin/BookingManagement/AllBookingsPage'; // <-- Import
+import AllIssuesPage from './pages/Admin/IssueManagement/AllIssuesPage'; 
 
 function App() {
   return (
@@ -59,6 +62,9 @@ function App() {
               <Route element={<AdminLayout />}>
                 <Route path="dashboard" element={<AdminDashboardPage />} />
                 <Route path="users" element={<UserManagementPage />} />
+                <Route path="vehicles" element={<VehicleManagementPage />} />
+                <Route path="bookings" element={<AllBookingsPage />} /> {/* <-- Add new route */}
+                <Route path="issues" element={<AllIssuesPage />} />
                 {/* Other admin pages will be added here */}
               </Route>
             </Route>

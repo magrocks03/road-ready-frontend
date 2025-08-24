@@ -43,3 +43,36 @@ export const deactivateUserApiCall = (userId) => {
   const url = `${API_BASE_URL}/Admin/users/${userId}/deactivate`;
   return axios.put(url);
 };
+
+/**
+ * Fetches a paginated list of all bookings in the system.
+ * @param {number} pageNumber - The page number to fetch.
+ * @param {number} pageSize - The number of items per page.
+ * @returns {Promise} - The axios promise for the API call.
+ */
+export const getAllBookingsApiCall = (pageNumber = 1, pageSize = 10) => {
+  const url = `${API_BASE_URL}/Admin/bookings?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  return axios.get(url);
+};
+
+/**
+ * Processes a refund for a booking.
+ * @param {object} refundData - The data for the refund (bookingId, reason, amount).
+ * @returns {Promise} - The axios promise for the API call.
+ */
+export const processRefundApiCall = (refundData) => {
+  const url = `${API_BASE_URL}/Admin/refunds`;
+  return axios.post(url, refundData);
+};
+
+// --- ADD THIS NEW FUNCTION ---
+/**
+ * Fetches a paginated list of all reported issues.
+ * @param {number} pageNumber - The page number to fetch.
+ * @param {number} pageSize - The number of items per page.
+ * @returns {Promise} - The axios promise for the API call.
+ */
+export const getAllIssuesApiCall = (pageNumber = 1, pageSize = 10) => {
+    const url = `${API_BASE_URL}/Admin/issues?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+    return axios.get(url);
+};

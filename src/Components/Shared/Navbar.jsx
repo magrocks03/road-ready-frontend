@@ -23,6 +23,34 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
+  const renderUserLinks = (isMobile = false) => {
+    if (!currentUser) return null;
+
+    const linkClass = isMobile 
+      ? "block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border"
+      : "text-slate-gray hover:text-primary";
+
+    if (currentUser.role === 'Admin') {
+      return (
+        <Link to="/admin/dashboard" onClick={closeMenu} className={linkClass}>
+          Admin Panel
+        </Link>
+      );
+    }
+    
+    if (currentUser.role === 'Customer') {
+      return (
+        <>
+          <Link to="/my-bookings" onClick={closeMenu} className={linkClass}>My Bookings</Link>
+          <Link to="/my-issues" onClick={closeMenu} className={linkClass}>My Issues</Link>
+          <Link to="/my-profile" onClick={closeMenu} className={linkClass}>My Profile</Link>
+        </>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-card shadow-md md:bg-card/80 md:backdrop-blur-md dark:shadow-lg dark:shadow-slate-900/50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -33,13 +61,7 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/vehicles" className="text-slate-gray hover:text-primary">Vehicles</Link>
-          {currentUser && (
-            <>
-              <Link to="/my-bookings" className="text-slate-gray hover:text-primary">My Bookings</Link>
-              <Link to="/my-issues" className="text-slate-gray hover:text-primary">My Issues</Link>
-              <Link to="/my-profile" className="text-slate-gray hover:text-primary">My Profile</Link>
-            </>
-          )}
+          {renderUserLinks()}
           <Link to="/about" className="text-slate-gray hover:text-primary">About</Link>
         </div>
 
@@ -47,7 +69,8 @@ const Navbar = () => {
           <ThemeToggle />
           {currentUser ? (
             <>
-              <span className="text-text-primary">Welcome, {currentUser}!</span>
+              {/* --- THIS IS THE CHANGED MESSAGE --- */}
+              <span className="text-text-primary">Hola !</span>
               <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Logout</button>
             </>
           ) : (
@@ -70,18 +93,12 @@ const Navbar = () => {
         <div className="md:hidden bg-card absolute w-full shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link to="/vehicles" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">Vehicles</Link>
-            {currentUser && (
-              <>
-               <Link to="/my-bookings" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">My Bookings</Link>
-               <Link to="/my-issues" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">My Issues</Link>
-               <Link to="/my-profile" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">My Profile</Link>
-              </>
-            )}
+            {renderUserLinks(true)}
             <Link to="/about" onClick={closeMenu} className="block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border">About</Link>
             <hr className="border-border"/>
             {currentUser ? (
                <div className="px-3 py-2">
-                 <span className="block text-text-primary">Welcome, {currentUser}!</span>
+                 <span className="block text-text-primary">Hola !</span>
                  <button onClick={handleLogout} className="w-full mt-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-left">Logout</button>
                </div>
             ) : (

@@ -1,22 +1,31 @@
 import { BehaviorSubject } from "rxjs";
+import { jwtDecode } from 'jwt-decode';
 
-// Create a BehaviorSubject. It stores the latest value and emits it to new subscribers.
-// We initialize it with the username from session storage, or null if it doesn't exist.
-const userSubject = new BehaviorSubject(sessionStorage.getItem("username"));
-
-// This is the public observable that components will subscribe to.
-export const user$ = userSubject.asObservable();
-
-// This function is called when a user successfully logs in.
-export const userLogin = (username, token) => {
-  sessionStorage.setItem("username", username);
-  sessionStorage.setItem("token", token);
-  userSubject.next(username); // Push the new username to all subscribers
+const getInitialUser = () => {
+  const token = sessionStorage.getItem("token");
+  if (!token) return null;
+  try {
+    return jwtDecode(token);
+  } catch {
+    return null;
+  }
 };
 
-// This function is called when a user logs out.
+const userSubject = new BehaviorSubject(getInitialUser());
+
+export const user$ = userSubject.asObservable();
+
+export const userLogin = (token) => {
+  sessionStorage.setItem("token", token);
+  try {
+    const decoded = jwtDecode(token);
+    userSubject.next(decoded);
+  } catch (error) {
+    userSubject.next(null);
+  }
+};
+
 export const userLogout = () => {
-  sessionStorage.removeItem("username");
   sessionStorage.removeItem("token");
-  userSubject.next(null); // Push null to all subscribers
+  userSubject.next(null);
 };

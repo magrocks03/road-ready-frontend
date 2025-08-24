@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // <-- Import Link
+import { useNavigate, Link } from 'react-router-dom';
 import { LoginModel } from '../../Models/LoginModel';
 import { LoginErrorModel } from '../../Models/LoginErrorModel';
 import { loginApiCall } from '../../services/AuthService';
@@ -35,8 +35,8 @@ const LoginPage = () => {
 
     loginApiCall(user)
       .then((response) => {
-        const { token, firstName } = response.data;
-        userLogin(firstName, token);
+        const { token } = response.data;
+        userLogin(token);
         navigate('/');
       })
       .catch((error) => {
@@ -44,7 +44,7 @@ const LoginPage = () => {
         if (error.response?.data?.message) {
           setApiError(error.response.data.message);
         } else {
-          setApiError('An unexpected error occurred. Please try again.');
+          setApiError('Invalid credentials.');
         }
       });
   };
@@ -81,7 +81,6 @@ const LoginPage = () => {
             <label htmlFor="password" className="block text-sm font-medium text-text-secondary">
               Password
             </label>
-            {/* --- NEW LINK ADDED HERE --- */}
             <div className="text-sm">
               <Link to="/forgot-password" className="font-medium text-primary hover:text-primary-hover">
                 Forgot password?

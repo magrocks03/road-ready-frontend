@@ -22,8 +22,8 @@ const RegisterPage = () => {
 
     registerApiCall(user)
       .then((response) => {
-        const { token, firstName } = response.data;
-        userLogin(firstName, token);
+        const { token } = response.data;
+        userLogin(token);
         navigate('/');
       })
       .catch((error) => {

@@ -26,55 +26,91 @@ const AllIssuesPage = () => {
   };
 
   const handleOpenModal = (issue) => {
-    // We need the booking's total cost for the refund placeholder, let's find it.
-    // This is a temporary solution; ideally the API would return this.
-    // For now, we'll just pass a placeholder.
-    const issueWithCost = { ...issue, bookingTotalCost: 'N/A' };
-    setSelectedIssue(issueWithCost);
+    setSelectedIssue(issue);
     setIsModalOpen(true);
   };
 
-  if (isLoading) return <p>Loading issues...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (isLoading) return <div className="text-center py-20"><p>Loading issues...</p></div>;
+  if (error) return <div className="text-center py-20"><p className="text-red-500">{error}</p></div>;
 
   return (
     <>
-      <ManageIssueModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onActionSuccess={forceRefetch} issue={selectedIssue} />
-      <div>
+      <ManageIssueModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onActionSuccess={forceRefetch} 
+        issue={selectedIssue} 
+      />
+      <div className="container mx-auto py-12 px-4">
         <h1 className="text-3xl font-bold text-text-primary mb-8">Reported Issues</h1>
-        <div className="bg-card p-4 rounded-lg shadow-md">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="border-b border-border">
-                <tr>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Issue ID</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Customer</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Vehicle</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Reported On</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Status</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {issues.map(issue => (
+        
+        <div className="bg-card p-6 rounded-lg shadow-md overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-background text-left">
+                <th className="p-4 text-sm font-semibold text-text-primary">Issue ID</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Customer</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Vehicle</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Reported On</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Status</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {issues.length > 0 ? (
+                issues.map(issue => (
                   <tr key={issue.issueId} className="border-b border-border last:border-b-0">
                     <td className="p-4 text-text-primary font-semibold">{issue.issueId}</td>
                     <td className="p-4 text-text-secondary">{issue.customerName}</td>
                     <td className="p-4 text-text-secondary">{issue.vehicleName}</td>
                     <td className="p-4 text-text-secondary">{format(new Date(issue.reportedAt), 'd MMM yyyy')}</td>
-                    <td className="p-4"><span className={`text-xs font-bold px-2 py-1 rounded-full ${ issue.status === 'Resolved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }`}>{issue.status}</span></td>
-                    <td className="p-4"><button onClick={() => handleOpenModal(issue)} className="text-primary hover:underline text-sm">Manage</button></td>
+                    <td className="p-4">
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                        issue.status === 'Resolved' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {issue.status}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <button 
+                        onClick={() => handleOpenModal(issue)} 
+                        className="text-primary hover:underline text-sm"
+                      >
+                        Manage
+                      </button>
+                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-20 text-text-secondary">
+                    No issues reported.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+
         {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-8 space-x-4">
-            <button onClick={() => handlePageChange(page - 1)} disabled={page <= 1} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Previous</button>
+          <div className="flex justify-center items-center mt-12 space-x-4">
+            <button 
+              onClick={() => handlePageChange(page - 1)} 
+              disabled={page <= 1} 
+              className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50"
+            >
+              Previous
+            </button>
             <span>Page {page} of {totalPages}</span>
-            <button onClick={() => handlePageChange(page + 1)} disabled={page >= totalPages} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Next</button>
+            <button 
+              onClick={() => handlePageChange(page + 1)} 
+              disabled={page >= totalPages} 
+              className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

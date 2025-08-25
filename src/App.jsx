@@ -5,7 +5,9 @@ import Layout from './Components/Shared/Layout';
 import MinimalLayout from './Components/Shared/MinimalLayout';
 import ProtectedRoute from './Components/Shared/ProtectedRoute';
 import AdminProtectedRoute from './Components/Shared/AdminProtectedRoute';
+import OperatorProtectedRoute from './Components/Shared/OperatorProtectedRoute';
 import AdminLayout from './pages/Admin/Shared/AdminLayout';
+import OperatorLayout from './pages/Operator/Shared/OperatorLayout';
 
 // Page Components
 import HomePage from './pages/Home/HomePage';
@@ -24,14 +26,17 @@ import MyIssuesPage from './pages/MyIssues/MyIssuesPage';
 import AdminDashboardPage from './pages/Admin/Dashboard/AdminDashboardPage';
 import UserManagementPage from './pages/Admin/UserManagement/UserManagementPage';
 import VehicleManagementPage from './pages/Admin/VehicleManagement/VehicleManagementPage';
-import AllBookingsPage from './pages/Admin/BookingManagement/AllBookingsPage'; // <-- Import
-import AllIssuesPage from './pages/Admin/IssueManagement/AllIssuesPage'; 
+import AllBookingsPage from './pages/Admin/BookingManagement/AllBookingsPage';
+import AllIssuesPage from './pages/Admin/IssueManagement/AllIssuesPage';
+import AllBookingsPageAgent from './pages/Operator/BookingManagement/AllBookingsPageAgent';
+import AllIssuesPageAgent from './pages/Operator/IssueManagement/AllIssuesPageAgent';
+
 
 function App() {
   return (
     <div className="bg-background text-text-primary min-h-screen">
         <Routes>
-          {/* Layout for pages without the main navbar */}
+          {/* Layout for pages without the main navbar (e.g., password reset) */}
           <Route element={<MinimalLayout />}>
             <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
@@ -57,15 +62,23 @@ function App() {
               <Route path="my-issues" element={<MyIssuesPage />} />
             </Route>
 
-            {/* Protected Routes for Admins */}
+            {/* Admin-Only Routes */}
             <Route path="admin" element={<AdminProtectedRoute />}>
               <Route element={<AdminLayout />}>
                 <Route path="dashboard" element={<AdminDashboardPage />} />
                 <Route path="users" element={<UserManagementPage />} />
                 <Route path="vehicles" element={<VehicleManagementPage />} />
-                <Route path="bookings" element={<AllBookingsPage />} /> {/* <-- Add new route */}
+                <Route path="bookings" element={<AllBookingsPage />} />
                 <Route path="issues" element={<AllIssuesPage />} />
-                {/* Other admin pages will be added here */}
+              </Route>
+            </Route>
+
+            {/* Operator (Admin & Rental Agent) Routes */}
+            <Route path="operator" element={<OperatorProtectedRoute />}>
+              <Route element={<OperatorLayout />}>
+                {/* --- USE THE NEW AGENT-SPECIFIC PAGES --- */}
+                <Route path="bookings" element={<AllBookingsPageAgent />} />
+                <Route path="issues" element={<AllIssuesPageAgent />} />
               </Route>
             </Route>
           </Route>

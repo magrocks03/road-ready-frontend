@@ -25,6 +25,9 @@ const BookingDetailsPage = () => {
     );
   }
 
+  // --- NEW LOGIC: Check if the booking start date is in the future ---
+  const canCancelBooking = new Date(booking.startDate) > new Date();
+
   const handleReviewSubmitted = () => {
     alert("Thank you for your review!");
     navigate('/my-bookings');
@@ -68,7 +71,6 @@ const BookingDetailsPage = () => {
           </div>
 
           <div className="bg-card p-6 rounded-lg shadow-md space-y-6">
-            {/* --- ALL MISSING DETAILS ADDED HERE --- */}
             <div>
               <h2 className="text-xl font-bold text-text-primary mb-2">Vehicle</h2>
               <p className="text-text-secondary">{booking.vehicleName} {booking.vehicleModel}</p>
@@ -114,10 +116,10 @@ const BookingDetailsPage = () => {
               </div>
               <p className="text-sm text-text-secondary mt-1">Paid on {format(new Date(booking.payment.paymentDate), 'd MMM yyyy')} via {booking.payment.paymentMethod}</p>
             </div>
-            {/* --- END OF MISSING DETAILS --- */}
             
             <div className="border-t border-border pt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-              {booking.status === 'Confirmed' && (
+              {/* --- CONDITION UPDATED HERE --- */}
+              {booking.status === 'Confirmed' && canCancelBooking && (
                 <button onClick={handleCancelBooking} className="px-6 py-2 font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200">
                   Cancel Booking
                 </button>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useFetch } from '../../../hooks/useFetch';
 import { getAllBookingsApiCall } from '../../../services/AdminService';
 import { updateBookingStatusApiCall } from '../../../services/OperationsService';
-import ProcessRefundModal from './ProcessRefundModal'; // <-- Import new modal
+import ProcessRefundModal from './ProcessRefundModal';
 import { format } from 'date-fns';
 
 const AllBookingsPage = () => {
@@ -32,70 +32,112 @@ const AllBookingsPage = () => {
   };
 
   const handleMarkAsCompleted = (bookingId) => {
-    if (window.confirm("Are you sure you want to mark this booking as completed?")) {
+    if (window.confirm("Mark this booking as completed?")) {
       updateBookingStatusApiCall(bookingId, 'Completed')
         .then(() => {
-          alert('Booking status updated to "Completed".');
+          alert('Status updated.');
           forceRefetch();
         })
         .catch(err => alert(err.response?.data?.message || 'Failed to update status.'));
     }
   };
 
-  if (isLoading) return <p>Loading bookings...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (isLoading) return <div className="text-center py-20"><p>Loading bookings...</p></div>;
+  if (error) return <div className="text-center py-20"><p className="text-red-500">{error}</p></div>;
 
   return (
     <>
-      <ProcessRefundModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onActionSuccess={forceRefetch} booking={selectedBooking} />
-      <div>
+      <ProcessRefundModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onActionSuccess={forceRefetch} 
+        booking={selectedBooking} 
+      />
+      <div className="container mx-auto py-12 px-4">
         <h1 className="text-3xl font-bold text-text-primary mb-8">All Bookings</h1>
-        <div className="bg-card p-4 rounded-lg shadow-md">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="border-b border-border">
-                <tr>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Booking ID</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Vehicle</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Dates</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Total Cost</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary">Status</th>
-                  <th className="p-4 text-sm font-semibold text-text-secondary text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map(booking => (
+        <div className="bg-card p-6 rounded-lg shadow-md overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="bg-background">
+                <th className="p-4 text-sm font-semibold text-text-primary">Booking ID</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Vehicle</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Dates</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Total Paid</th>
+                <th className="p-4 text-sm font-semibold text-text-primary">Status</th>
+                <th className="p-4 text-sm font-semibold text-text-primary text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.length > 0 ? (
+                bookings.map(booking => (
                   <tr key={booking.bookingId} className="border-b border-border last:border-b-0">
                     <td className="p-4 text-text-primary font-semibold">{booking.bookingId}</td>
                     <td className="p-4 text-text-secondary">{booking.vehicleName}</td>
-                    <td className="p-4 text-text-secondary">{format(new Date(booking.startDate), 'd MMM')} - {format(new Date(booking.endDate), 'd MMM yyyy')}</td>
-                    <td className="p-4 text-text-secondary">${booking.totalCost.toFixed(2)}</td>
-                    <td className="p-4"><span className={`text-xs font-bold px-2 py-1 rounded-full ${ booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' : booking.status.includes('Cancelled') ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800' }`}>{booking.status}</span></td>
+                    <td className="p-4 text-text-secondary">
+                      {format(new Date(booking.startDate), 'd MMM')} - {format(new Date(booking.endDate), 'd MMM yyyy')}
+                    </td>
+                    <td className="p-4 text-text-secondary">
+                      ${booking.totalCost.toFixed(2)}
+                    </td>
+                    <td className="p-4">
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                        booking.status === 'Confirmed'
+                          ? 'bg-green-100 text-green-800'
+                          : booking.status.includes('Cancelled')
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {booking.status}
+                      </span>
+                    </td>
                     <td className="p-4 text-center">
-                      {/* --- NEW: Conditional Action Buttons --- */}
                       {booking.status === 'Confirmed' && (
-                        <button onClick={() => handleMarkAsCompleted(booking.bookingId)} className="text-primary hover:underline text-sm font-semibold">
+                        <button 
+                          onClick={() => handleMarkAsCompleted(booking.bookingId)} 
+                          className="text-primary hover:underline text-sm font-semibold"
+                        >
                           Mark as Completed
                         </button>
                       )}
                       {booking.status === 'Cancelled - Refund Pending' && (
-                        <button onClick={() => handleOpenRefundModal(booking)} className="text-green-600 hover:underline text-sm font-semibold">
+                        <button 
+                          onClick={() => handleOpenRefundModal(booking)} 
+                          className="text-green-600 hover:underline text-sm font-semibold"
+                        >
                           Process Refund
                         </button>
                       )}
-                      {/* If no action is needed, this cell will be empty */}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="text-center py-20 text-text-secondary">
+                    No bookings found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
+
         {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-8 space-x-4">
-            <button onClick={() => handlePageChange(page - 1)} disabled={page <= 1} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Previous</button>
-            <span>Page {page} of {totalPages}</span>
-            <button onClick={() => handlePageChange(page + 1)} disabled={page >= totalPages} className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50">Next</button>
+          <div className="flex justify-center items-center mt-12 space-x-4">
+            <button 
+              onClick={() => handlePageChange(page - 1)} 
+              disabled={page <= 1} 
+              className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="text-text-primary">Page {page} of {totalPages}</span>
+            <button 
+              onClick={() => handlePageChange(page + 1)} 
+              disabled={page >= totalPages} 
+              className="px-4 py-2 bg-border text-text-secondary rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

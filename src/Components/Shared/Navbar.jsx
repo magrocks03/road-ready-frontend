@@ -30,6 +30,8 @@ const Navbar = () => {
       ? "block px-3 py-2 rounded-md text-base font-medium text-text-secondary hover:bg-border"
       : "text-slate-gray hover:text-primary";
 
+    // --- THIS IS THE CORRECTED LOGIC ---
+    // 1. Check for Admin role first.
     if (currentUser.role === 'Admin') {
       return (
         <Link to="/admin/dashboard" onClick={closeMenu} className={linkClass}>
@@ -38,6 +40,16 @@ const Navbar = () => {
       );
     }
     
+    // 2. Then, check for Rental Agent role.
+    if (currentUser.role === 'Rental Agent') {
+      return (
+        <Link to="/operator/bookings" onClick={closeMenu} className={linkClass}>
+          Operator Panel
+        </Link>
+      );
+    }
+    
+    // 3. Finally, show links for Customer.
     if (currentUser.role === 'Customer') {
       return (
         <>
@@ -69,7 +81,6 @@ const Navbar = () => {
           <ThemeToggle />
           {currentUser ? (
             <>
-              {/* --- THIS IS THE CHANGED MESSAGE --- */}
               <span className="text-text-primary">Hola !</span>
               <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Logout</button>
             </>

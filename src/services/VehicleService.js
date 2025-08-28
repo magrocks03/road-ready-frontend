@@ -43,3 +43,14 @@ export const deleteVehicleApiCall = (id) => {
   const url = `${API_BASE_URL}/Vehicles/${id}`;
   return axios.delete(url);
 };
+
+
+/**
+ * Fetches a list of vehicles, intended for the landing page's featured section.
+ * @returns {Promise} - The axios promise for the API call.
+ */
+export const getFeaturedVehiclesApiCall = () => {
+  // We'll fetch the first 3 vehicles to feature on the home page.
+  const url = `${API_BASE_URL}/Vehicles?pageNumber=1&pageSize=3`;
+  return axios.get(url);
+};

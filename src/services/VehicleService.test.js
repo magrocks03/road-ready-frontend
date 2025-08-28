@@ -4,7 +4,8 @@ import {
   searchVehiclesApiCall,
   addVehicleApiCall,
   updateVehicleApiCall,
-  deleteVehicleApiCall
+  deleteVehicleApiCall,
+  getFeaturedVehiclesApiCall
 } from './VehicleService';
 import { API_BASE_URL } from '../environment';
 
@@ -55,5 +56,13 @@ describe('VehicleService', () => {
     axios.delete.mockResolvedValue({ data: 'success' });
     await deleteVehicleApiCall(vehicleId);
     expect(axios.delete).toHaveBeenCalledWith(expectedUrl);
+  });
+
+  // --- ADDED THIS TEST CASE ---
+  it('should call the get featured vehicles API with the correct URL', async () => {
+    const expectedUrl = `${API_BASE_URL}/Vehicles?pageNumber=1&pageSize=3`;
+    axios.get.mockResolvedValue({ data: 'success' });
+    await getFeaturedVehiclesApiCall();
+    expect(axios.get).toHaveBeenCalledWith(expectedUrl);
   });
 });

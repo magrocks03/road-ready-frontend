@@ -11,6 +11,7 @@ import OperatorLayout from './pages/Operator/Shared/OperatorLayout';
 
 // Page Components
 import HomePage from './pages/Home/HomePage';
+import AboutPage from './pages/About/AboutPage';
 import LoginPage from './pages/Login/LoginPage';
 import RegisterPage from './pages/Register/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPassword/ForgotPasswordPage';
@@ -30,6 +31,8 @@ import AllBookingsPage from './pages/Admin/BookingManagement/AllBookingsPage';
 import AllIssuesPage from './pages/Admin/IssueManagement/AllIssuesPage';
 import AllBookingsPageAgent from './pages/Operator/BookingManagement/AllBookingsPageAgent';
 import AllIssuesPageAgent from './pages/Operator/IssueManagement/AllIssuesPageAgent';
+import TermsOfServicePage from './pages/Legal/TermsOfServicePage';
+import PrivacyPolicyPage from './pages/Legal/PrivacyPolicyPage';
 
 
 function App() {
@@ -50,7 +53,9 @@ function App() {
             <Route path="forgot-password" element={<ForgotPasswordPage />} />
             <Route path="vehicles" element={<VehiclesPage />} />
             <Route path="vehicles/:id" element={<VehicleDetailPage />} />
-            <Route path="about" element={<h1>About Page</h1>} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
             {/* Protected Routes for logged-in customers */}
             <Route element={<ProtectedRoute />}>
